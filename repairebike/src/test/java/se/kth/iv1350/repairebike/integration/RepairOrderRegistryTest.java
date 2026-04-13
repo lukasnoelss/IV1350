@@ -55,4 +55,10 @@ public class RepairOrderRegistryTest {
         RepairOrder updated = registry.findRepairOrderById(1);
         assertEquals("Accepted", updated.getState());
     }
+
+    @Test
+    public void testFindRepairOrderByPhoneReturnsNullIfNotFound() {
+        RepairOrder found = registry.findRepairOrderByPhoneNumber("0000000000");
+        assertNull(found);
+    }
 }
