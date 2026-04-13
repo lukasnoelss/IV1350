@@ -1,0 +1,8 @@
+/Users/lukasnoel/Documents/GitHub/IV1350/repairebike/src/main/java/se/kth/iv1350/repairebike/controller/Controller.java
+/Users/lukasnoel/Documents/GitHub/IV1350/repairebike/src/main/java/se/kth/iv1350/repairebike/dto/CustomerDTO.java
+/Users/lukasnoel/Documents/GitHub/IV1350/repairebike/src/main/java/se/kth/iv1350/repairebike/integration/CustomerRegistry.java
+/Users/lukasnoel/Documents/GitHub/IV1350/repairebike/src/main/java/se/kth/iv1350/repairebike/integration/Printer.java
+/Users/lukasnoel/Documents/GitHub/IV1350/repairebike/src/main/java/se/kth/iv1350/repairebike/integration/RepairOrderRegistry.java
+/Users/lukasnoel/Documents/GitHub/IV1350/repairebike/src/main/java/se/kth/iv1350/repairebike/model/RepairOrder.java
+/Users/lukasnoel/Documents/GitHub/IV1350/repairebike/src/main/java/se/kth/iv1350/repairebike/startup/Main.java
+/Users/lukasnoel/Documents/GitHub/IV1350/repairebike/src/main/java/se/kth/iv1350/repairebike/view/View.java
