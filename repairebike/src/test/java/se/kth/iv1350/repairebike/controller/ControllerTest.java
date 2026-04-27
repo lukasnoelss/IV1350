@@ -8,6 +8,7 @@ import se.kth.iv1350.repairebike.integration.CustomerRegistry;
 import se.kth.iv1350.repairebike.integration.Printer;
 import se.kth.iv1350.repairebike.integration.RepairOrderRegistry;
 import se.kth.iv1350.repairebike.model.RepairOrder;
+import se.kth.iv1350.repairebike.dto.RepairOrderDTO;
 import java.util.List;
 
 /**
@@ -41,7 +42,7 @@ public class ControllerTest {
     public void testCreateRepairOrderIncreasesOrderCount() {
         controller.createRepairOrder(
                 "Battery broken", "0701234567", "BIKE-001");
-        List<RepairOrder> orders = controller.findAllRepairOrders();
+        List<RepairOrderDTO> orders = controller.findAllRepairOrders();
         assertEquals(1, orders.size());
     }
 
@@ -51,7 +52,7 @@ public class ControllerTest {
                 "Battery broken", "0701234567", "BIKE-001");
         controller.addDiagnosticResult(1,
                 "Battery cells degraded");
-        RepairOrder order = controller.findRepairOrder("0701234567");
+        RepairOrderDTO order = controller.findRepairOrder("0701234567");
         assertTrue(order.getDiagnosticResults()
                 .contains("Battery cells degraded"));
     }
@@ -61,7 +62,7 @@ public class ControllerTest {
         controller.createRepairOrder(
                 "Battery broken", "0701234567", "BIKE-001");
         controller.addRepairTask(1, "Replace battery pack");
-        RepairOrder order = controller.findRepairOrder("0701234567");
+        RepairOrderDTO order = controller.findRepairOrder("0701234567");
         assertTrue(order.getRepairTasks()
                 .contains("Replace battery pack"));
     }
@@ -71,7 +72,13 @@ public class ControllerTest {
         controller.createRepairOrder(
                 "Battery broken", "0701234567", "BIKE-001");
         controller.acceptRepairOrder(1);
-        RepairOrder order = controller.findRepairOrder("0701234567");
+        RepairOrderDTO order = controller.findRepairOrder("0701234567");
         assertEquals("Accepted", order.getState());
+    }
+
+    @Test
+    public void testFindRepairOrderReturnsNullIfNotFound() {
+        RepairOrderDTO result = controller.findRepairOrder("0000000000");
+        assertNull(result);
     }
 }

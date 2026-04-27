@@ -25,7 +25,7 @@ public class RepairOrderRegistry {
      * @return A list of all repair orders.
      */
     public List<RepairOrder> findAllRepairOrders() {
-        return repairOrders;
+        return new ArrayList<>(repairOrders);
     }
 
     /**

@@ -2,7 +2,8 @@ package se.kth.iv1350.repairebike.view;
 
 import se.kth.iv1350.repairebike.controller.Controller;
 import se.kth.iv1350.repairebike.dto.CustomerDTO;
-import se.kth.iv1350.repairebike.model.RepairOrder;
+import se.kth.iv1350.repairebike.dto.RepairOrderDTO;
+
 import java.util.List;
 
 /**
@@ -42,8 +43,8 @@ public class View {
         System.out.println("Repair order created.");
 
         System.out.println("\n--- findAllRepairOrders ---");
-        List<RepairOrder> orders = controller.findAllRepairOrders();
-        for (RepairOrder order : orders) {
+        List<RepairOrderDTO> orders = controller.findAllRepairOrders();
+        for (RepairOrderDTO order : orders) {
             System.out.println("Order ID: " + order.getId()
                     + ", State: " + order.getState());
         }
@@ -59,7 +60,7 @@ public class View {
         System.out.println("Repair task added.");
 
         System.out.println("\n--- findRepairOrder ---");
-        RepairOrder found = controller.findRepairOrder("0701234567");
+        RepairOrderDTO found = controller.findRepairOrder("0701234567");
         if (found != null) {
             System.out.println("Found order ID: "
                     + found.getId()

@@ -1,5 +1,7 @@
 package se.kth.iv1350.repairebike.controller;
 
+import se.kth.iv1350.repairebike.dto.RepairOrderDTO;
+import java.util.ArrayList;
 import se.kth.iv1350.repairebike.dto.CustomerDTO;
 import se.kth.iv1350.repairebike.integration.CustomerRegistry;
 import se.kth.iv1350.repairebike.integration.Printer;
@@ -63,8 +65,13 @@ public class Controller {
      *
      * @return A list of all repair orders.
      */
-    public List<RepairOrder> findAllRepairOrders() {
-        return repairOrderRegistry.findAllRepairOrders();
+    public List<RepairOrderDTO> findAllRepairOrders() {
+        List<RepairOrder> repairOrders = repairOrderRegistry.findAllRepairOrders();
+        List<RepairOrderDTO> repairOrderDTOs = new ArrayList<>();
+        for (RepairOrder order : repairOrders) {
+            repairOrderDTOs.add(createRepairOrderDTO(order));
+        }
+        return repairOrderDTOs;
     }
 
     /**
@@ -97,9 +104,13 @@ public class Controller {
      * @param phoneNumber The phone number to search for.
      * @return The found repair order, or null if not found.
      */
-    public RepairOrder findRepairOrder(String phoneNumber) {
-        return repairOrderRegistry
+    public RepairOrderDTO findRepairOrder(String phoneNumber) {
+        RepairOrder repairOrder = repairOrderRegistry
                 .findRepairOrderByPhoneNumber(phoneNumber);
+        if (repairOrder == null) {
+            return null;
+        }
+        return createRepairOrderDTO(repairOrder);
     }
 
     /**
@@ -112,5 +123,23 @@ public class Controller {
         repairOrder.accept();
         repairOrderRegistry.updateRepairOrder(repairOrder);
         printer.printRepairOrder(repairOrder);
+    }
+
+    /**
+     * Converts a RepairOrder to a RepairOrderDTO.
+     * 
+     * @param repairOrder The RepairOrder to convert.
+     * @return The RepairOrderDTO.
+     */
+    private RepairOrderDTO createRepairOrderDTO(
+            RepairOrder repairOrder) {
+        return new RepairOrderDTO(
+                repairOrder.getId(),
+                repairOrder.getCustomerPhone(),
+                repairOrder.getBikeSerialNo(),
+                repairOrder.getCustomersProblemDescription(),
+                repairOrder.getState(),
+                repairOrder.getDiagnosticResults(),
+                repairOrder.getRepairTasks());
     }
 }

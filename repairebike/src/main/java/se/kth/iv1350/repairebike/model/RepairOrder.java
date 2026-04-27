@@ -114,7 +114,7 @@ public class RepairOrder {
      * @return The list of diagnostic results.
      */
     public List<String> getDiagnosticResults() {
-        return diagnosticResults;
+        return new ArrayList<>(diagnosticResults);
     }
 
     /**
@@ -123,6 +123,6 @@ public class RepairOrder {
      * @return The list of repair tasks.
      */
     public List<String> getRepairTasks() {
-        return repairTasks;
+        return new ArrayList<>(repairTasks);
     }
 }
