@@ -1,6 +1,6 @@
 package se.kth.iv1350.repairebike.integration;
 
-import se.kth.iv1350.repairebike.model.RepairOrder;
+import se.kth.iv1350.repairebike.dto.RepairOrderDTO;
 
 /**
  * Responsible for printing repair order documents.
@@ -12,7 +12,7 @@ public class Printer {
          *
          * @param repairOrder The repair order to print.
          */
-        public void printRepairOrder(RepairOrder repairOrder) {
+        public void printRepairOrder(RepairOrderDTO repairOrder) {
                 System.out.println("=== REPAIR ORDER ===");
                 System.out.println("ID: " + repairOrder.getId());
                 System.out.println("Phone: "

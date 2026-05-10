@@ -5,9 +5,8 @@ import org.junit.jupiter.api.BeforeEach;
 import static org.junit.jupiter.api.Assertions.*;
 import se.kth.iv1350.repairebike.dto.CustomerDTO;
 import se.kth.iv1350.repairebike.integration.CustomerRegistry;
-import se.kth.iv1350.repairebike.integration.Printer;
 import se.kth.iv1350.repairebike.integration.RepairOrderRegistry;
-import se.kth.iv1350.repairebike.model.RepairOrder;
+import se.kth.iv1350.repairebike.integration.Printer;
 import se.kth.iv1350.repairebike.dto.RepairOrderDTO;
 import java.util.List;
 

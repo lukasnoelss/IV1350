@@ -1,5 +1,6 @@
 package se.kth.iv1350.repairebike.model;
 
+import se.kth.iv1350.repairebike.dto.RepairOrderDTO;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,6 +37,23 @@ public class RepairOrder {
         this.state = "NewlyCreated";
         this.diagnosticResults = new ArrayList<>();
         this.repairTasks = new ArrayList<>();
+    }
+
+    /**
+     * Creates a RepairOrder from a RepairOrderDTO.
+     * Used to restore a domain object for business logic.
+     *
+     * @param dto The DTO containing the repair order data.
+     */
+    public RepairOrder(RepairOrderDTO dto) {
+        this.id = dto.getId();
+        this.date = LocalDate.now();
+        this.customerPhone = dto.getCustomerPhone();
+        this.bikeSerialNo = dto.getBikeSerialNo();
+        this.customersProblemDescription = dto.getCustomersProblemDescription();
+        this.state = dto.getState();
+        this.diagnosticResults = new ArrayList<>(dto.getDiagnosticResults());
+        this.repairTasks = new ArrayList<>(dto.getRepairTasks());
     }
 
     /**
@@ -124,5 +142,17 @@ public class RepairOrder {
      */
     public List<String> getRepairTasks() {
         return new ArrayList<>(repairTasks);
+    }
+
+    /**
+     * Converts this RepairOrder to a RepairOrderDTO.
+     *
+     * @return A DTO containing this repair order's data.
+     */
+    public RepairOrderDTO toDTO() {
+        return new RepairOrderDTO(id, customerPhone,
+                bikeSerialNo, customersProblemDescription,
+                state, new ArrayList<>(diagnosticResults),
+                new ArrayList<>(repairTasks));
     }
 }

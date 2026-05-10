@@ -1,7 +1,6 @@
 package se.kth.iv1350.repairebike.controller;
 
 import se.kth.iv1350.repairebike.dto.RepairOrderDTO;
-import java.util.ArrayList;
 import se.kth.iv1350.repairebike.dto.CustomerDTO;
 import se.kth.iv1350.repairebike.integration.CustomerRegistry;
 import se.kth.iv1350.repairebike.integration.Printer;
@@ -57,7 +56,8 @@ public class Controller {
         RepairOrder repairOrder = new RepairOrder(
                 nextRepairOrderId++, problemDescr,
                 customerPhone, bikeSerialNo);
-        repairOrderRegistry.storeRepairOrder(repairOrder);
+        repairOrderRegistry.storeRepairOrder(
+                repairOrder.toDTO());
     }
 
     /**
@@ -66,12 +66,7 @@ public class Controller {
      * @return A list of all repair orders.
      */
     public List<RepairOrderDTO> findAllRepairOrders() {
-        List<RepairOrder> repairOrders = repairOrderRegistry.findAllRepairOrders();
-        List<RepairOrderDTO> repairOrderDTOs = new ArrayList<>();
-        for (RepairOrder order : repairOrders) {
-            repairOrderDTOs.add(createRepairOrderDTO(order));
-        }
-        return repairOrderDTOs;
+        return repairOrderRegistry.findAllRepairOrders();
     }
 
     /**
@@ -82,8 +77,12 @@ public class Controller {
      */
     public void addDiagnosticResult(int repairOrderId,
             String diagTaskResult) {
-        RepairOrder repairOrder = repairOrderRegistry.findRepairOrderById(repairOrderId);
+        RepairOrderDTO orderDTO = repairOrderRegistry
+                .findRepairOrderById(repairOrderId);
+        RepairOrder repairOrder = new RepairOrder(orderDTO);
         repairOrder.addDiagnosticResult(diagTaskResult);
+        repairOrderRegistry.updateRepairOrder(
+                repairOrder.toDTO());
     }
 
     /**
@@ -94,8 +93,12 @@ public class Controller {
      */
     public void addRepairTask(int repairOrderId,
             String repairTask) {
-        RepairOrder repairOrder = repairOrderRegistry.findRepairOrderById(repairOrderId);
+        RepairOrderDTO orderDTO = repairOrderRegistry
+                .findRepairOrderById(repairOrderId);
+        RepairOrder repairOrder = new RepairOrder(orderDTO);
         repairOrder.addRepairTask(repairTask);
+        repairOrderRegistry.updateRepairOrder(
+                repairOrder.toDTO());
     }
 
     /**
@@ -105,12 +108,8 @@ public class Controller {
      * @return The found repair order, or null if not found.
      */
     public RepairOrderDTO findRepairOrder(String phoneNumber) {
-        RepairOrder repairOrder = repairOrderRegistry
+        return repairOrderRegistry
                 .findRepairOrderByPhoneNumber(phoneNumber);
-        if (repairOrder == null) {
-            return null;
-        }
-        return createRepairOrderDTO(repairOrder);
     }
 
     /**
@@ -119,27 +118,12 @@ public class Controller {
      * @param repairOrderId The id of the repair order to accept.
      */
     public void acceptRepairOrder(int repairOrderId) {
-        RepairOrder repairOrder = repairOrderRegistry.findRepairOrderById(repairOrderId);
+        RepairOrderDTO orderDTO = repairOrderRegistry
+                .findRepairOrderById(repairOrderId);
+        RepairOrder repairOrder = new RepairOrder(orderDTO);
         repairOrder.accept();
-        repairOrderRegistry.updateRepairOrder(repairOrder);
-        printer.printRepairOrder(repairOrder);
-    }
-
-    /**
-     * Converts a RepairOrder to a RepairOrderDTO.
-     * 
-     * @param repairOrder The RepairOrder to convert.
-     * @return The RepairOrderDTO.
-     */
-    private RepairOrderDTO createRepairOrderDTO(
-            RepairOrder repairOrder) {
-        return new RepairOrderDTO(
-                repairOrder.getId(),
-                repairOrder.getCustomerPhone(),
-                repairOrder.getBikeSerialNo(),
-                repairOrder.getCustomersProblemDescription(),
-                repairOrder.getState(),
-                repairOrder.getDiagnosticResults(),
-                repairOrder.getRepairTasks());
+        RepairOrderDTO updatedDTO = repairOrder.toDTO();
+        repairOrderRegistry.updateRepairOrder(updatedDTO);
+        printer.printRepairOrder(updatedDTO);
     }
 }
