@@ -6,9 +6,31 @@ import java.util.List;
 
 /**
  * Handles all communication with the repair order database.
+ * Implemented as a Singleton to ensure only one instance exists,
+ * guaranteeing a single consistent list of repair orders.
  */
 public class RepairOrderRegistry {
+    private static RepairOrderRegistry instance;
     private List<RepairOrderDTO> repairOrders = new ArrayList<>();
+
+    /**
+     * Private constructor to prevent external instantiation.
+     */
+    private RepairOrderRegistry() {
+    }
+
+    /**
+     * Returns the single instance of RepairOrderRegistry.
+     * Creates it if it does not yet exist.
+     *
+     * @return The single RepairOrderRegistry instance.
+     */
+    public static RepairOrderRegistry getInstance() {
+        if (instance == null) {
+            instance = new RepairOrderRegistry();
+        }
+        return instance;
+    }
 
     /**
      * Stores a new repair order.
@@ -33,9 +55,7 @@ public class RepairOrderRegistry {
      *
      * @param repairOrderId The id to search for.
      * @return The found repair order.
-     * @throws DatabaseFailureException     If the database cannot be called.
-     * @throws RepairOrderNotFoundException If no repair order with the
-     *                                      given id exists.
+     * @throws DatabaseFailureException If the database cannot be called.
      */
     public RepairOrderDTO findRepairOrderById(int repairOrderId) {
         if (repairOrderId == 0) {
@@ -78,5 +98,28 @@ public class RepairOrderRegistry {
                 return;
             }
         }
+    }
+
+    /**
+     * Resets the singleton instance. Used only for unit testing.
+     */
+    public static void resetInstance() {
+        instance = null;
+    }
+
+    /**
+     * Returns the number of repair orders for a given customer.
+     *
+     * @param customerPhone The customer's phone number.
+     * @return The number of repair orders for that customer.
+     */
+    public int countRepairOrdersByPhone(String customerPhone) {
+        int count = 0;
+        for (RepairOrderDTO order : repairOrders) {
+            if (order.getCustomerPhone().equals(customerPhone)) {
+                count++;
+            }
+        }
+        return count;
     }
 }

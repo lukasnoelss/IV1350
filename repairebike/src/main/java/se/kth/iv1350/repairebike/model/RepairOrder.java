@@ -11,13 +11,15 @@ import java.util.List;
 public class RepairOrder {
     private int id;
     private LocalDate date;
-    private LocalDate estimatedCompletionDate;
     private String customerPhone;
     private String bikeSerialNo;
     private String customersProblemDescription;
     private String state;
     private List<String> diagnosticResults;
     private List<String> repairTasks;
+    private List<RepairOrderObserver> observers;
+    private DiscountStrategy discountStrategy;
+    private static final double BASE_PRICE = 500.0;
 
     /**
      * Creates a new RepairOrder with state NewlyCreated.
@@ -37,6 +39,8 @@ public class RepairOrder {
         this.state = "NewlyCreated";
         this.diagnosticResults = new ArrayList<>();
         this.repairTasks = new ArrayList<>();
+        this.observers = new ArrayList<>();
+        this.discountStrategy = new NoDiscount();
     }
 
     /**
@@ -54,6 +58,35 @@ public class RepairOrder {
         this.state = dto.getState();
         this.diagnosticResults = new ArrayList<>(dto.getDiagnosticResults());
         this.repairTasks = new ArrayList<>(dto.getRepairTasks());
+        this.observers = new ArrayList<>();
+        this.discountStrategy = new NoDiscount();
+    }
+
+    /**
+     * Adds an observer to be notified when this repair order changes.
+     *
+     * @param observer The observer to add.
+     */
+    public void addObserver(RepairOrderObserver observer) {
+        observers.add(observer);
+    }
+
+    /**
+     * Sets the discount strategy for this repair order.
+     *
+     * @param discountStrategy The discount strategy to apply.
+     */
+    public void setDiscountStrategy(DiscountStrategy discountStrategy) {
+        this.discountStrategy = discountStrategy;
+    }
+
+    /**
+     * Returns the price after applying the current discount strategy.
+     *
+     * @return The discounted price.
+     */
+    public double getPrice() {
+        return discountStrategy.getDiscount(BASE_PRICE);
     }
 
     /**
@@ -63,6 +96,7 @@ public class RepairOrder {
      */
     public void addDiagnosticResult(String diagTaskResult) {
         diagnosticResults.add(diagTaskResult);
+        notifyObservers();
     }
 
     /**
@@ -72,6 +106,7 @@ public class RepairOrder {
      */
     public void addRepairTask(String repairTask) {
         repairTasks.add(repairTask);
+        notifyObservers();
     }
 
     /**
@@ -79,6 +114,17 @@ public class RepairOrder {
      */
     public void accept() {
         this.state = "Accepted";
+        notifyObservers();
+    }
+
+    /**
+     * Notifies all observers that this repair order has been updated.
+     */
+    private void notifyObservers() {
+        RepairOrderDTO dto = toDTO();
+        for (RepairOrderObserver observer : observers) {
+            observer.repairOrderUpdated(dto);
+        }
     }
 
     /**

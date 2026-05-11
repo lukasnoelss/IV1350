@@ -52,11 +52,11 @@ public class View {
         }
 
         System.out.println("\n--- createRepairOrder ---");
-        controller.createRepairOrder(
+        double price = controller.createRepairOrder(
                 "Battery not charging",
                 "0701234567",
                 "BIKE-001");
-        System.out.println("Repair order created.");
+        System.out.println("Repair order created. Price: " + price + " SEK");
 
         System.out.println("\n--- findAllRepairOrders ---");
         List<RepairOrderDTO> orders = controller.findAllRepairOrders();

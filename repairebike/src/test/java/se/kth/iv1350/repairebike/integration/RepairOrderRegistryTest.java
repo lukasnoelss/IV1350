@@ -17,7 +17,8 @@ public class RepairOrderRegistryTest {
 
     @BeforeEach
     public void setUp() {
-        registry = new RepairOrderRegistry();
+        RepairOrderRegistry.resetInstance();
+        registry = RepairOrderRegistry.getInstance();
         order = new RepairOrderDTO(1, "0701234567",
                 "BIKE-001", "Battery broken",
                 "NewlyCreated", new ArrayList<>(),

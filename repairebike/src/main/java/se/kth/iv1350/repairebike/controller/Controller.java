@@ -6,7 +6,10 @@ import se.kth.iv1350.repairebike.integration.CustomerNotFoundException;
 import se.kth.iv1350.repairebike.integration.CustomerRegistry;
 import se.kth.iv1350.repairebike.integration.Printer;
 import se.kth.iv1350.repairebike.integration.RepairOrderRegistry;
+import se.kth.iv1350.repairebike.model.LoyaltyDiscount;
 import se.kth.iv1350.repairebike.model.RepairOrder;
+import se.kth.iv1350.repairebike.model.RepairOrderObserver;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -17,6 +20,7 @@ public class Controller {
         private CustomerRegistry customerRegistry;
         private RepairOrderRegistry repairOrderRegistry;
         private Printer printer;
+        private List<RepairOrderObserver> observers;
         private int nextRepairOrderId = 1;
 
         /**
@@ -32,6 +36,16 @@ public class Controller {
                 this.customerRegistry = customerRegistry;
                 this.repairOrderRegistry = repairOrderRegistry;
                 this.printer = printer;
+                this.observers = new ArrayList<>();
+        }
+
+        /**
+         * Adds an observer to be notified when a repair order is updated.
+         *
+         * @param observer The observer to add.
+         */
+        public void addObserver(RepairOrderObserver observer) {
+                observers.add(observer);
         }
 
         /**
@@ -49,19 +63,28 @@ public class Controller {
 
         /**
          * Creates a new repair order and stores it.
+         * Applies a loyalty discount if this is the customer's
+         * third or multiple-of-three repair order.
          *
          * @param problemDescr  The customer's problem description.
          * @param customerPhone The customer's phone number.
          * @param bikeSerialNo  The bike's serial number.
+         * @return The price of the repair order after any discount.
          */
-        public void createRepairOrder(String problemDescr,
+        public double createRepairOrder(String problemDescr,
                         String customerPhone,
                         String bikeSerialNo) {
                 RepairOrder repairOrder = new RepairOrder(
                                 nextRepairOrderId++, problemDescr,
                                 customerPhone, bikeSerialNo);
-                repairOrderRegistry.storeRepairOrder(
-                                repairOrder.toDTO());
+                repairOrderRegistry.storeRepairOrder(repairOrder.toDTO());
+                int orderCount = repairOrderRegistry
+                                .countRepairOrdersByPhone(customerPhone);
+                if (orderCount % 3 == 0) {
+                        repairOrder.setDiscountStrategy(new LoyaltyDiscount());
+                }
+                addObserversTo(repairOrder);
+                return repairOrder.getPrice();
         }
 
         /**
@@ -84,9 +107,9 @@ public class Controller {
                 RepairOrderDTO orderDTO = repairOrderRegistry
                                 .findRepairOrderById(repairOrderId);
                 RepairOrder repairOrder = new RepairOrder(orderDTO);
+                addObserversTo(repairOrder);
                 repairOrder.addDiagnosticResult(diagTaskResult);
-                repairOrderRegistry.updateRepairOrder(
-                                repairOrder.toDTO());
+                repairOrderRegistry.updateRepairOrder(repairOrder.toDTO());
         }
 
         /**
@@ -100,9 +123,9 @@ public class Controller {
                 RepairOrderDTO orderDTO = repairOrderRegistry
                                 .findRepairOrderById(repairOrderId);
                 RepairOrder repairOrder = new RepairOrder(orderDTO);
+                addObserversTo(repairOrder);
                 repairOrder.addRepairTask(repairTask);
-                repairOrderRegistry.updateRepairOrder(
-                                repairOrder.toDTO());
+                repairOrderRegistry.updateRepairOrder(repairOrder.toDTO());
         }
 
         /**
@@ -125,9 +148,21 @@ public class Controller {
                 RepairOrderDTO orderDTO = repairOrderRegistry
                                 .findRepairOrderById(repairOrderId);
                 RepairOrder repairOrder = new RepairOrder(orderDTO);
+                addObserversTo(repairOrder);
                 repairOrder.accept();
                 RepairOrderDTO updatedDTO = repairOrder.toDTO();
                 repairOrderRegistry.updateRepairOrder(updatedDTO);
                 printer.printRepairOrder(updatedDTO);
+        }
+
+        /**
+         * Adds all registered observers to the given repair order.
+         *
+         * @param repairOrder The repair order to add observers to.
+         */
+        private void addObserversTo(RepairOrder repairOrder) {
+                for (RepairOrderObserver observer : observers) {
+                        repairOrder.addObserver(observer);
+                }
         }
 }

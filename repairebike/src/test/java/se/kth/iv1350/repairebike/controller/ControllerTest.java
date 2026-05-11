@@ -10,6 +10,7 @@ import se.kth.iv1350.repairebike.integration.Printer;
 import se.kth.iv1350.repairebike.dto.RepairOrderDTO;
 import java.util.List;
 import se.kth.iv1350.repairebike.integration.CustomerNotFoundException;
+import se.kth.iv1350.repairebike.integration.RepairOrderRegistry;
 
 /**
  * Tests for the Controller class.
@@ -19,8 +20,9 @@ public class ControllerTest {
 
     @BeforeEach
     public void setUp() {
+        RepairOrderRegistry.resetInstance();
         CustomerRegistry customerRegistry = new CustomerRegistry();
-        RepairOrderRegistry repairOrderRegistry = new RepairOrderRegistry();
+        RepairOrderRegistry repairOrderRegistry = RepairOrderRegistry.getInstance();
         Printer printer = new Printer();
         controller = new Controller(
                 customerRegistry, repairOrderRegistry, printer);
