@@ -9,6 +9,7 @@ import se.kth.iv1350.repairebike.integration.RepairOrderRegistry;
 import se.kth.iv1350.repairebike.integration.Printer;
 import se.kth.iv1350.repairebike.dto.RepairOrderDTO;
 import java.util.List;
+import se.kth.iv1350.repairebike.integration.CustomerNotFoundException;
 
 /**
  * Tests for the Controller class.
@@ -26,15 +27,17 @@ public class ControllerTest {
     }
 
     @Test
-    public void testFindExistingCustomerReturnsCustomer() {
+    public void testFindExistingCustomerReturnsCustomer()
+            throws CustomerNotFoundException {
         CustomerDTO result = controller.findCustomer("0701234567");
         assertNotNull(result);
     }
 
     @Test
-    public void testFindNonExistingCustomerReturnsNull() {
-        CustomerDTO result = controller.findCustomer("0000000000");
-        assertNull(result);
+    public void testFindNonExistingCustomerThrowsException() {
+        assertThrows(CustomerNotFoundException.class, () -> {
+            controller.findCustomer("0000000000");
+        });
     }
 
     @Test

@@ -30,12 +30,17 @@ public class RepairOrderRegistry {
 
     /**
      * Finds a repair order by its id.
-     * Returns null if not found.
      *
      * @param repairOrderId The id to search for.
-     * @return The found repair order, or null if not found.
+     * @return The found repair order.
+     * @throws DatabaseFailureException     If the database cannot be called.
+     * @throws RepairOrderNotFoundException If no repair order with the
+     *                                      given id exists.
      */
     public RepairOrderDTO findRepairOrderById(int repairOrderId) {
+        if (repairOrderId == 0) {
+            throw new DatabaseFailureException(repairOrderId);
+        }
         for (RepairOrderDTO order : repairOrders) {
             if (order.getId() == repairOrderId) {
                 return order;

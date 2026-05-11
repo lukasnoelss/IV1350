@@ -3,6 +3,9 @@ package se.kth.iv1350.repairebike.view;
 import se.kth.iv1350.repairebike.controller.Controller;
 import se.kth.iv1350.repairebike.dto.CustomerDTO;
 import se.kth.iv1350.repairebike.dto.RepairOrderDTO;
+import se.kth.iv1350.repairebike.integration.CustomerNotFoundException;
+import se.kth.iv1350.repairebike.integration.DatabaseFailureException;
+import se.kth.iv1350.repairebike.util.ErrorLogger;
 
 import java.util.List;
 
@@ -12,6 +15,7 @@ import java.util.List;
  */
 public class View {
     private Controller controller;
+    private ErrorLogger logger;
 
     /**
      * Creates a new View.
@@ -20,19 +24,31 @@ public class View {
      */
     public View(Controller controller) {
         this.controller = controller;
+        this.logger = new ErrorLogger("error.log");
     }
 
     /**
-     * Simulates the entire Repair Electric Bike basic flow.
+     * Simulates the entire Repair Electric Bike basic flow,
+     * including exception handling for error scenarios.
      */
     public void runFakeExecution() {
-        System.out.println("--- findCustomer ---");
-        CustomerDTO customer = controller.findCustomer("0701234567");
-        if (customer != null) {
+        System.out.println("--- findCustomer (existing) ---");
+        try {
+            CustomerDTO customer = controller.findCustomer("0701234567");
             System.out.println("Found customer: "
                     + customer.getName()
                     + ", " + customer.getEmail()
                     + ", bike: " + customer.getBikeSerialNo());
+        } catch (CustomerNotFoundException e) {
+            System.out.println("Customer not found: " + e.getMessage());
+        }
+
+        System.out.println("\n--- findCustomer (non-existing) ---");
+        try {
+            CustomerDTO customer = controller.findCustomer("0000000000");
+            System.out.println("Found customer: " + customer.getName());
+        } catch (CustomerNotFoundException e) {
+            System.out.println("Customer not found: " + e.getMessage());
         }
 
         System.out.println("\n--- createRepairOrder ---");
@@ -50,13 +66,11 @@ public class View {
         }
 
         System.out.println("\n--- addDiagnosticResult ---");
-        controller.addDiagnosticResult(1,
-                "Battery cells degraded");
+        controller.addDiagnosticResult(1, "Battery cells degraded");
         System.out.println("Diagnostic result added.");
 
         System.out.println("\n--- addRepairTask ---");
-        controller.addRepairTask(1,
-                "Replace battery pack");
+        controller.addRepairTask(1, "Replace battery pack");
         System.out.println("Repair task added.");
 
         System.out.println("\n--- findRepairOrder ---");
@@ -69,5 +83,13 @@ public class View {
 
         System.out.println("\n--- acceptRepairOrder ---");
         controller.acceptRepairOrder(1);
+
+        System.out.println("\n--- database failure simulation ---");
+        try {
+            controller.addDiagnosticResult(0, "This should fail");
+        } catch (DatabaseFailureException e) {
+            System.out.println("ERROR: Could not reach database. Please try again later.");
+            logger.log("Database failure when calling addDiagnosticResult", e);
+        }
     }
 }

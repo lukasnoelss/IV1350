@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import se.kth.iv1350.repairebike.dto.RepairOrderDTO;
 import java.util.ArrayList;
 import java.util.List;
+import se.kth.iv1350.repairebike.integration.DatabaseFailureException;
 
 /**
  * Tests for the RepairOrderRegistry class.
@@ -66,5 +67,12 @@ public class RepairOrderRegistryTest {
     public void testFindRepairOrderByPhoneReturnsNullIfNotFound() {
         RepairOrderDTO found = registry.findRepairOrderByPhoneNumber("0000000000");
         assertNull(found);
+    }
+
+    @Test
+    public void testFindRepairOrderByIdThrowsDatabaseFailureException() {
+        assertThrows(DatabaseFailureException.class, () -> {
+            registry.findRepairOrderById(0);
+        });
     }
 }
