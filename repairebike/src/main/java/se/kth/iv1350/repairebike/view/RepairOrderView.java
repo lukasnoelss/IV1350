@@ -1,34 +1,46 @@
 package se.kth.iv1350.repairebike.view;
 
 import se.kth.iv1350.repairebike.dto.RepairOrderDTO;
-import se.kth.iv1350.repairebike.model.RepairOrderObserver;
 
 /**
  * Displays repair order updates to System.out.
  * Notifies technicians and receptionists when a
  * repair order has been updated.
  */
-public class RepairOrderView implements RepairOrderObserver {
+public class RepairOrderView extends RepairOrderObserverHandler {
 
-    /**
-     * Called when a repair order has been updated.
-     * Prints the updated repair order to System.out.
-     *
-     * @param repairOrder The updated repair order.
-     */
-    @Override
-    public void repairOrderUpdated(RepairOrderDTO repairOrder) {
-        System.out.println("=== REPAIR ORDER UPDATE ===");
-        System.out.println("ID: " + repairOrder.getId());
-        System.out.println("State: " + repairOrder.getState());
-        System.out.println("Phone: " + repairOrder.getCustomerPhone());
-        System.out.println("Bike: " + repairOrder.getBikeSerialNo());
-        System.out.println("Problem: "
-                + repairOrder.getCustomersProblemDescription());
-        System.out.println("Diagnostic results: "
-                + repairOrder.getDiagnosticResults());
-        System.out.println("Repair tasks: "
-                + repairOrder.getRepairTasks());
-        System.out.println("===========================");
-    }
+        /**
+         * Prints the updated repair order to System.out.
+         *
+         * @param repairOrder The updated repair order.
+         * @throws Exception if printing fails.
+         */
+        @Override
+        protected void doHandleRepairOrderUpdate(RepairOrderDTO repairOrder)
+                        throws Exception {
+                System.out.println("=== REPAIR ORDER UPDATE ===");
+                System.out.println("ID: " + repairOrder.getId());
+                System.out.println("State: " + repairOrder.getState());
+                System.out.println("Phone: " + repairOrder.getCustomerPhone());
+                System.out.println("Bike: " + repairOrder.getBikeSerialNo());
+                System.out.println("Problem: "
+                                + repairOrder.getCustomersProblemDescription());
+                System.out.println("Diagnostic results: "
+                                + repairOrder.getDiagnosticResults());
+                System.out.println("Repair tasks: "
+                                + repairOrder.getRepairTasks());
+                System.out.println("===========================");
+        }
+
+        /**
+         * Handles errors that occur when printing a repair order update.
+         * Prints an error message to System.out.
+         *
+         * @param e The exception that was thrown.
+         */
+        @Override
+        protected void handleErrors(Exception e) {
+                System.out.println("Could not display repair order update: "
+                                + e.getMessage());
+        }
 }
