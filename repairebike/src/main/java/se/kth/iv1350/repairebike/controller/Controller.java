@@ -4,11 +4,13 @@ import se.kth.iv1350.repairebike.dto.RepairOrderDTO;
 import se.kth.iv1350.repairebike.dto.CustomerDTO;
 import se.kth.iv1350.repairebike.integration.CustomerNotFoundException;
 import se.kth.iv1350.repairebike.integration.CustomerRegistry;
+import se.kth.iv1350.repairebike.integration.DatabaseFailureException;
 import se.kth.iv1350.repairebike.integration.Printer;
 import se.kth.iv1350.repairebike.integration.RepairOrderRegistry;
 import se.kth.iv1350.repairebike.model.LoyaltyDiscount;
 import se.kth.iv1350.repairebike.model.RepairOrder;
 import se.kth.iv1350.repairebike.model.RepairOrderObserver;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -101,9 +103,10 @@ public class Controller {
          *
          * @param repairOrderId  The id of the repair order.
          * @param diagTaskResult The diagnostic result to add.
+         * @throws DatabaseFailureException If the database cannot be reached.
          */
         public void addDiagnosticResult(int repairOrderId,
-                        String diagTaskResult) {
+                        String diagTaskResult) throws DatabaseFailureException {
                 RepairOrderDTO orderDTO = repairOrderRegistry
                                 .findRepairOrderById(repairOrderId);
                 RepairOrder repairOrder = new RepairOrder(orderDTO);
@@ -117,9 +120,10 @@ public class Controller {
          *
          * @param repairOrderId The id of the repair order.
          * @param repairTask    The repair task to add.
+         * @throws DatabaseFailureException If the database cannot be reached.
          */
         public void addRepairTask(int repairOrderId,
-                        String repairTask) {
+                        String repairTask) throws DatabaseFailureException {
                 RepairOrderDTO orderDTO = repairOrderRegistry
                                 .findRepairOrderById(repairOrderId);
                 RepairOrder repairOrder = new RepairOrder(orderDTO);
@@ -143,8 +147,9 @@ public class Controller {
          * Accepts the specified repair order and prints it.
          *
          * @param repairOrderId The id of the repair order to accept.
+         * @throws DatabaseFailureException If the database cannot be reached.
          */
-        public void acceptRepairOrder(int repairOrderId) {
+        public void acceptRepairOrder(int repairOrderId) throws DatabaseFailureException {
                 RepairOrderDTO orderDTO = repairOrderRegistry
                                 .findRepairOrderById(repairOrderId);
                 RepairOrder repairOrder = new RepairOrder(orderDTO);

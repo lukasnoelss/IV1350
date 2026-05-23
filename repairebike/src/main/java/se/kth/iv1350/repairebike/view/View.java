@@ -32,46 +32,23 @@ public class View {
      * including exception handling for error scenarios.
      */
     public void runFakeExecution() {
-        System.out.println("--- findCustomer (existing) ---");
-        try {
-            CustomerDTO customer = controller.findCustomer("0701234567");
-            System.out.println("Found customer: "
-                    + customer.getName()
-                    + ", " + customer.getEmail()
-                    + ", bike: " + customer.getBikeSerialNo());
-        } catch (CustomerNotFoundException e) {
-            System.out.println("Customer not found: " + e.getMessage());
-        }
-
-        System.out.println("\n--- findCustomer (non-existing) ---");
-        try {
-            CustomerDTO customer = controller.findCustomer("0000000000");
-            System.out.println("Found customer: " + customer.getName());
-        } catch (CustomerNotFoundException e) {
-            System.out.println("Customer not found: " + e.getMessage());
-        }
-
-        System.out.println("\n--- createRepairOrder ---");
-        double price = controller.createRepairOrder(
-                "Battery not charging",
-                "0701234567",
-                "BIKE-001");
-        System.out.println("Repair order created. Price: " + price + " SEK");
-
-        System.out.println("\n--- findAllRepairOrders ---");
-        List<RepairOrderDTO> orders = controller.findAllRepairOrders();
-        for (RepairOrderDTO order : orders) {
-            System.out.println("Order ID: " + order.getId()
-                    + ", State: " + order.getState());
-        }
-
         System.out.println("\n--- addDiagnosticResult ---");
-        controller.addDiagnosticResult(1, "Battery cells degraded");
-        System.out.println("Diagnostic result added.");
+        try {
+            controller.addDiagnosticResult(1, "Battery cells degraded");
+            System.out.println("Diagnostic result added.");
+        } catch (DatabaseFailureException e) {
+            System.out.println("ERROR: Could not reach database. Please try again later.");
+            logger.log("Database failure when calling addDiagnosticResult", e);
+        }
 
         System.out.println("\n--- addRepairTask ---");
-        controller.addRepairTask(1, "Replace battery pack");
-        System.out.println("Repair task added.");
+        try {
+            controller.addRepairTask(1, "Replace battery pack");
+            System.out.println("Repair task added.");
+        } catch (DatabaseFailureException e) {
+            System.out.println("ERROR: Could not reach database. Please try again later.");
+            logger.log("Database failure when calling addRepairTask", e);
+        }
 
         System.out.println("\n--- findRepairOrder ---");
         RepairOrderDTO found = controller.findRepairOrder("0701234567");
@@ -82,7 +59,12 @@ public class View {
         }
 
         System.out.println("\n--- acceptRepairOrder ---");
-        controller.acceptRepairOrder(1);
+        try {
+            controller.acceptRepairOrder(1);
+        } catch (DatabaseFailureException e) {
+            System.out.println("ERROR: Could not reach database. Please try again later.");
+            logger.log("Database failure when calling acceptRepairOrder", e);
+        }
 
         System.out.println("\n--- database failure simulation ---");
         try {
